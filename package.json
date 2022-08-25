@@ -1,0 +1,19 @@
+{
+  "name": "record-bin-lambda-function",
+  "version": "1.0.0",
+  "description": "A Serverless functions that receives a webhook from a record deletion and handles it to create a backup version on a bin",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "datocms"
+  ],
+  "author": "Marcelo Finamor Vieira",
+  "license": "ISC",
+  "dependencies": {
+    "@datocms/cma-client-node": "^1.1.1",
+    "@vercel/node": "^2.5.10",
+    "typescript": "^4.7.4"
+  }
+}
