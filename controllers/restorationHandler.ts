@@ -1,11 +1,12 @@
 import recursivelyDeleteAllBlockIDs from "../utils/recursivelyDeleteAllBlockIDs";
 import { buildClient } from "@datocms/cma-client-node";
-import { VercelResponse } from "@vercel/node";
+import { VercelRequest, VercelResponse } from "@vercel/node";
 
 export default async function restorationHandler(
-  recordBody: any,
+  req: VercelRequest,
   res: VercelResponse
 ) {
+  const recordBody = req.body;
   const requestBody = recordBody.entity;
   delete requestBody.id;
   delete requestBody.attributes.created_at;

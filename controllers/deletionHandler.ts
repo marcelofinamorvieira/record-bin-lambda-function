@@ -1,9 +1,10 @@
 import { buildClient } from "@datocms/cma-client-node";
-import { VercelResponse } from "@vercel/node";
+import { VercelRequest, VercelResponse } from "@vercel/node";
 import generateTrashLabel from "../utils/generateTrashLabel";
 import getRecordBinModel from "../utils/getRecordBinModel";
 
-export default async function (webhookBody: any, res: VercelResponse) {
+export default async function (req: VercelRequest, res: VercelResponse) {
+  const webhookBody = req.body;
   const client = buildClient({
     apiToken: process.env.DATOCMS_FULLACCESS_API_TOKEN as string,
     environment: webhookBody.environment,

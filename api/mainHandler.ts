@@ -2,6 +2,7 @@ import binCleanupHandler from "../controllers/binCleanupHandler";
 import deletionHandler from "../controllers/deletionHandler";
 import restorationHandler from "../controllers/restorationHandler";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import initializationHandler from "../controllers/initializationHandler";
 
 export default async function mainHandler(
   req: VercelRequest,
@@ -20,13 +21,16 @@ export default async function mainHandler(
 
   switch (req.body.event_type) {
     case "delete":
-      await deletionHandler(req.body, res);
+      await deletionHandler(req, res);
       break;
     case "to_be_restored":
-      await restorationHandler(req.body, res);
+      await restorationHandler(req, res);
       break;
     case "cleanup":
-      await binCleanupHandler(req.body, res);
+      await binCleanupHandler(req, res);
+      break;
+    case "initialization":
+      await initializationHandler(req, res);
       break;
   }
 

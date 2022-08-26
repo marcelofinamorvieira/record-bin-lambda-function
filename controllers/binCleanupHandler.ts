@@ -1,7 +1,8 @@
 import { buildClient } from "@datocms/cma-client";
-import { VercelResponse } from "@vercel/node";
+import { VercelRequest, VercelResponse } from "@vercel/node";
 
-export default async function (requestBody: any, res: VercelResponse) {
+export default async function (req: VercelRequest, res: VercelResponse) {
+  const requestBody = req.body;
   const cutOffDate = new Date();
   cutOffDate.setDate(new Date().getDate() - requestBody.numberOfDays);
 
