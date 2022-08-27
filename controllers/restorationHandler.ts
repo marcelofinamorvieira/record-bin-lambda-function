@@ -1,5 +1,5 @@
 import recursivelyDeleteAllBlockIDs from "../utils/recursivelyDeleteAllBlockIDs";
-import { buildClient } from "@datocms/cma-client-node";
+import { ApiError, buildClient } from "@datocms/cma-client-node";
 import { VercelRequest, VercelResponse } from "@vercel/node";
 
 export default async function restorationHandler(
@@ -29,12 +29,17 @@ export default async function restorationHandler(
   try {
     restoredRecord = await client.items.rawCreate({ data: requestBody });
   } catch (error) {
-    console.log(error);
-    res.status(429).json({ recordBin: "The record could not be restored!" });
+    const response = error as ApiError;
+
+    console.log(response.errors[0].attributes);
+    res.status(429).json({
+      recordBin: "The record could not be restored!",
+      error: response.errors[0].attributes,
+    });
     return;
   }
 
-  await client.items.destroy(recordBody.trashRecordID);
+  // await client.items.destroy(recordBody.trashRecordID);
 
   res.status(200).json({
     recordBin: "The record has been successfully restored!",

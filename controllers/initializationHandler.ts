@@ -10,23 +10,25 @@ const initializationHandler = async (
     environment: req.body.environment,
   });
 
-  await client.webhooks.create({
-    name: "🗑 Record Bin",
-    url: req.body.vercelURL,
-    custom_payload: null,
-    headers: { foo: "bar" },
-    events: [
-      {
-        entity_type: "item",
-        event_types: ["delete"],
-      },
-    ],
-    http_basic_user: "",
-    http_basic_password: "",
-    enabled: true,
-    payload_api_version: "3",
-    nested_items_in_payload: true,
-  });
+  try {
+    await client.webhooks.create({
+      name: "🗑 Record Bin",
+      url: req.body.vercelURL,
+      custom_payload: null,
+      headers: { foo: "bar" },
+      events: [
+        {
+          entity_type: "item",
+          event_types: ["delete"],
+        },
+      ],
+      http_basic_user: "",
+      http_basic_password: "",
+      enabled: true,
+      payload_api_version: "3",
+      nested_items_in_payload: true,
+    });
+  } catch {}
 
   res.status(200).json({
     recordBin: "The plugin was successfully initialized!",
