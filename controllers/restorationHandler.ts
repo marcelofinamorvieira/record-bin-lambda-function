@@ -39,7 +39,7 @@ export default async function restorationHandler(
     return;
   }
 
-  // await client.items.destroy(recordBody.trashRecordID);
+  await client.items.destroy(recordBody.trashRecordID);
 
   res.status(200).json({
     recordBin: "The record has been successfully restored!",
