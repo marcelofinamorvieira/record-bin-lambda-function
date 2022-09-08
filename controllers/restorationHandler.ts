@@ -37,7 +37,8 @@ export default async function restorationHandler(
       error: {
         fullErrorPayload: JSON.stringify(
           response,
-          Object.getOwnPropertyNames(response)
+          Object.getOwnPropertyNames(response),
+          2
         ),
         simplifiedError: response.errors[0].attributes,
       },
