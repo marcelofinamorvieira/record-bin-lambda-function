@@ -34,7 +34,13 @@ export default async function restorationHandler(
     console.log(response.errors[0].attributes);
     res.status(429).json({
       recordBin: "The record could not be restored!",
-      error: response.errors[0].attributes,
+      error: {
+        fullErrorPayload: JSON.stringify(
+          response,
+          Object.getOwnPropertyNames(response)
+        ),
+        simplifiedError: response.errors[0].attributes,
+      },
     });
     return;
   }
