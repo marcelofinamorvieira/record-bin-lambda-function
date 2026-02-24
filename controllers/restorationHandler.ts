@@ -21,7 +21,7 @@ export default async function restorationHandler(
 
   const client = buildClient({
     apiToken: process.env.DATOCMS_FULLACCESS_API_TOKEN as string,
-    environment: requestBody.environment,
+    environment: recordBody.environment,
   });
 
   let restoredRecord;
