@@ -157,12 +157,42 @@ test("returns 400 for an invalid mpi phase", async () => {
     ok: false,
     error: {
       code: "INVALID_MPI_PHASE",
-      message: "mpi.phase must be finish_installation or config_mount",
+      message:
+        "mpi.phase must be finish_installation, config_mount, or config_connect",
       details: {
-        expected: ["finish_installation", "config_mount"],
+        expected: ["finish_installation", "config_mount", "config_connect"],
         received: "unknown_phase",
       },
     },
+  });
+});
+
+test("returns 200 for the config_connect mpi phase", async () => {
+  const response = createMockResponse();
+
+  await pluginHealthHandler(
+    {
+      method: "POST",
+      body: {
+        ...validPayload,
+        mpi: {
+          ...validPayload.mpi,
+          phase: "config_connect",
+        },
+      },
+    } as VercelRequest,
+    response.res
+  );
+
+  assert.equal(response.getStatusCode(), 200);
+  assert.deepEqual(response.getJsonBody(), {
+    ok: true,
+    mpi: {
+      message: "DATOCMS_RECORD_BIN_LAMBDA_PONG",
+      version: "2026-02-25",
+    },
+    service: "record-bin-lambda-function",
+    status: "ready",
   });
 });
 

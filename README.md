@@ -39,7 +39,7 @@ Request body:
   "mpi": {
     "message": "DATOCMS_RECORD_BIN_PLUGIN_PING",
     "version": "2026-02-25",
-    "phase": "finish_installation"
+    "phase": "config_connect"
   },
   "plugin": {
     "name": "datocms-plugin-record-bin",
@@ -53,7 +53,8 @@ Validation rules:
 - `event_type` must be `plugin_health_ping`
 - `mpi.message` must be `DATOCMS_RECORD_BIN_PLUGIN_PING`
 - `mpi.version` must be `2026-02-25`
-- `mpi.phase` must be `finish_installation` or `config_mount`
+- `mpi.phase` must be `finish_installation`, `config_mount`, or `config_connect`
+- The health endpoint is stateless and supports concurrent checks from multiple plugin sessions.
 
 Success response (`200`):
 
@@ -94,7 +95,7 @@ curl -i -X POST "https://<your-deployment>/api/datocms/plugin-health" \
     "mpi": {
       "message": "DATOCMS_RECORD_BIN_PLUGIN_PING",
       "version": "2026-02-25",
-      "phase": "finish_installation"
+      "phase": "config_connect"
     },
     "plugin": {
       "name": "datocms-plugin-record-bin",

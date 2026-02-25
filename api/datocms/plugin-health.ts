@@ -4,7 +4,13 @@ const MPI_PING_MESSAGE = "DATOCMS_RECORD_BIN_PLUGIN_PING";
 const MPI_PONG_MESSAGE = "DATOCMS_RECORD_BIN_LAMBDA_PONG";
 const MPI_VERSION = "2026-02-25";
 const SERVICE_NAME = "record-bin-lambda-function";
-const VALID_MPI_PHASES = ["finish_installation", "config_mount"] as const;
+const VALID_MPI_PHASES = [
+  "finish_installation",
+  "config_mount",
+  "config_connect",
+] as const;
+const VALID_MPI_PHASES_MESSAGE =
+  "mpi.phase must be finish_installation, config_mount, or config_connect";
 
 type ValidationError = {
   code: string;
@@ -76,7 +82,7 @@ const validatePayload = (payload: any): ValidationError | null => {
   if (!VALID_MPI_PHASES.includes(payload.mpi?.phase)) {
     return {
       code: "INVALID_MPI_PHASE",
-      message: "mpi.phase must be finish_installation or config_mount",
+      message: VALID_MPI_PHASES_MESSAGE,
       details: {
         expected: VALID_MPI_PHASES,
         received: payload.mpi?.phase,
