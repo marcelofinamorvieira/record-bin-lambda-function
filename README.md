@@ -27,6 +27,28 @@ This route keeps the original webhook-based behavior and dispatches by `event_ty
 
 The existing logic was kept untouched.
 
+## Cleanup trigger model (no CronJobs in this repo)
+
+Cleanup is request-driven. The lambda cleanup flow runs only when a client sends:
+
+```json
+{
+  "event_type": "cleanup",
+  "numberOfDays": 30,
+  "environment": "main"
+}
+```
+
+to `POST /`.
+
+This repository does not configure background schedulers such as:
+
+- Vercel Cron Jobs
+- Netlify Scheduled Functions
+- Cloudflare Cron Triggers
+
+We intentionally opted out of built-in cron jobs. On serverless platforms, scheduled invocations add recurring compute cost, while storage reduction versus boot-triggered cleanup is usually small.
+
 ### `POST /api/datocms/plugin-health`
 
 Health-check handshake route used by plugin installation/configuration.
