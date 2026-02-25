@@ -1,5 +1,5 @@
 import { buildClient } from "@datocms/cma-client";
-import { VercelRequest, VercelResponse } from "@vercel/node";
+import type { VercelRequest, VercelResponse } from "../types/vercel";
 
 const initializationHandler = async (
   req: VercelRequest,

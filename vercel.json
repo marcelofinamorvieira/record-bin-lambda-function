@@ -1,6 +1,11 @@
 {
   "routes": [
     {
+      "src": "/api/datocms/plugin-health",
+      "dest": "/api/datocms/plugin-health.ts",
+      "methods": ["POST", "GET", "OPTIONS"]
+    },
+    {
       "src": "/",
       "dest": "/api/mainHandler.ts",
       "methods": ["POST", "GET", "OPTIONS"]

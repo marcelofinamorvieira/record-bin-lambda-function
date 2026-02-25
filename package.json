@@ -4,7 +4,7 @@
   "description": "A Serverless functions that receives a webhook from a record deletion and handles it to create a backup version on a bin",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --test --import tsx \"tests/**/*.test.ts\""
   },
   "keywords": [
     "datocms"
@@ -12,8 +12,11 @@
   "author": "Marcelo Finamor Vieira",
   "license": "ISC",
   "dependencies": {
-    "@datocms/cma-client-node": "^1.1.1",
-    "@vercel/node": "^2.5.10",
-    "typescript": "^4.7.4"
+    "@datocms/cma-client-node": "^5.3.0",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.0",
+    "tsx": "^4.20.6"
   }
 }

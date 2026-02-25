@@ -1,16 +1,189 @@
-# Record bin lambda function
+# Record Bin Lambda Function
 
-A Serverless function that can manage backups and restoration of records through its API.
+Serverless backend used by the [DatoCMS Record Bin plugin](https://github.com/marcelofinamorvieira/datocms-plugin-record-bin).
 
-The lambda function can be deployed on Vercel in one click by [using this link](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fmarcelofinamorvieira%2Frecord-bin-lambda-function&env=DATOCMS_FULLACCESS_API_TOKEN&project-name=datocms-record-bin-lambda-function&repo-name=datocms-record-bin-lambda-function)
+It supports three deployment targets with equivalent behavior:
 
-It is intended to be used with the [record bin DatoCMS plugin](https://github.com/marcelofinamorvieira/datocms-plugin-record-bin)
+- Vercel Serverless Functions
+- Netlify Functions
+- Cloudflare Workers (Worker runtime with `nodejs_compat`)
 
-# Usage
+## Required environment variable
 
-After deploying the project on Vercel, and adding the API Token from your DatoCMS project the API will be available to interact with the plugin.
+Set this in every platform:
 
-Then, insert the deployed URL on the plugin installation process. The plugin will send a call to that URL that will make the plugin create a webhook, on your DatoCMS project that will manage and create a "Bin record" for every deleted record on that project.
-The function also makes available a "restore" call, that is used by the plugin to restore "Bin records" through the button directly on the dashboard.
+- `DATOCMS_FULLACCESS_API_TOKEN`: DatoCMS full-access API token used by restore/cleanup/delete flows.
 
-For more detailed information on usage refer to the [record bin documentation page](https://github.com/marcelofinamorvieira/datocms-plugin-record-bin)
+## API routes
+
+### `POST /` (existing restore/cleanup/delete/initialization behavior)
+
+This route keeps the original webhook-based behavior and dispatches by `event_type`:
+
+- `delete`
+- `to_be_restored`
+- `cleanup`
+- `initialization`
+
+The existing logic was kept untouched.
+
+### `POST /api/datocms/plugin-health`
+
+Health-check handshake route used by plugin installation/configuration.
+
+Request body:
+
+```json
+{
+  "event_type": "plugin_health_ping",
+  "mpi": {
+    "message": "DATOCMS_RECORD_BIN_PLUGIN_PING",
+    "version": "2026-02-25",
+    "phase": "finish_installation"
+  },
+  "plugin": {
+    "name": "datocms-plugin-record-bin",
+    "environment": "main"
+  }
+}
+```
+
+Validation rules:
+
+- `event_type` must be `plugin_health_ping`
+- `mpi.message` must be `DATOCMS_RECORD_BIN_PLUGIN_PING`
+- `mpi.version` must be `2026-02-25`
+- `mpi.phase` must be `finish_installation` or `config_mount`
+
+Success response (`200`):
+
+```json
+{
+  "ok": true,
+  "mpi": {
+    "message": "DATOCMS_RECORD_BIN_LAMBDA_PONG",
+    "version": "2026-02-25"
+  },
+  "service": "record-bin-lambda-function",
+  "status": "ready"
+}
+```
+
+Validation/internal error response envelope (`400` / `500`):
+
+```json
+{
+  "ok": false,
+  "error": {
+    "code": "<MACHINE_CODE>",
+    "message": "<human readable>",
+    "details": {}
+  }
+}
+```
+
+All supported platforms return CORS headers compatible with browser calls from the DatoCMS plugin iframe.
+
+Curl example:
+
+```bash
+curl -i -X POST "https://<your-deployment>/api/datocms/plugin-health" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "event_type": "plugin_health_ping",
+    "mpi": {
+      "message": "DATOCMS_RECORD_BIN_PLUGIN_PING",
+      "version": "2026-02-25",
+      "phase": "finish_installation"
+    },
+    "plugin": {
+      "name": "datocms-plugin-record-bin",
+      "environment": "main"
+    }
+  }'
+```
+
+## Deploying on Vercel
+
+One-click deploy:
+
+- https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fmarcelofinamorvieira%2Frecord-bin-lambda-function&env=DATOCMS_FULLACCESS_API_TOKEN&project-name=datocms-record-bin-lambda-function&repo-name=datocms-record-bin-lambda-function
+
+What this repo uses for Vercel:
+
+- `vercel.json` routes:
+  - `/` -> `api/mainHandler.ts`
+  - `/api/datocms/plugin-health` -> `api/datocms/plugin-health.ts`
+
+Local run:
+
+- `npx vercel dev`
+
+## Deploying on Netlify
+
+This repo includes Netlify function entrypoints and redirects:
+
+- Functions:
+  - `netlify/functions/main.ts`
+  - `netlify/functions/plugin-health.ts`
+- Routing config:
+  - `netlify.toml`
+
+`netlify.toml` maps:
+
+- `/` -> `/.netlify/functions/main`
+- `/api/datocms/plugin-health` -> `/.netlify/functions/plugin-health`
+
+Deployment steps:
+
+1. Create/import this repository in Netlify.
+2. Set `DATOCMS_FULLACCESS_API_TOKEN` in Site settings -> Environment variables.
+3. Deploy (Netlify builds functions automatically from `netlify/functions`).
+
+Local run:
+
+- `npx netlify dev`
+
+## Deploying on Cloudflare Workers
+
+This repo includes a worker wrapper:
+
+- Worker entrypoint: `cloudflare/worker.ts`
+- Wrangler config: `wrangler.toml`
+
+The worker handles:
+
+- `POST /`
+- `POST /api/datocms/plugin-health`
+
+And returns `404` JSON for unknown routes.
+
+Deployment steps:
+
+1. Install Wrangler (if needed): `npm i -D wrangler` or use `npx wrangler`.
+2. Authenticate: `npx wrangler login`
+3. Set secret token: `npx wrangler secret put DATOCMS_FULLACCESS_API_TOKEN`
+4. Deploy: `npx wrangler deploy`
+
+Local run:
+
+- `npx wrangler dev`
+
+Notes:
+
+- `wrangler.toml` enables `nodejs_compat`, which is required because the existing handlers use Node-style dependencies and `process.env`.
+- `cloudflare/worker.ts` copies the worker secret into `process.env.DATOCMS_FULLACCESS_API_TOKEN` so existing restore/cleanup/delete handlers continue to work without code changes.
+
+## Local verification
+
+Run the tests:
+
+```bash
+npm test
+```
+
+This suite validates:
+
+- plugin-health success and error paths
+- Netlify wrapper behavior
+- Cloudflare worker behavior

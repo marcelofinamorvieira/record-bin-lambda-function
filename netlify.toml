@@ -1,0 +1,14 @@
+[build]
+functions = "netlify/functions"
+
+[[redirects]]
+from = "/api/datocms/plugin-health"
+to = "/.netlify/functions/plugin-health"
+status = 200
+force = true
+
+[[redirects]]
+from = "/"
+to = "/.netlify/functions/main"
+status = 200
+force = true

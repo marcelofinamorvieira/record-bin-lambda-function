@@ -1,7 +1,7 @@
 import binCleanupHandler from "../controllers/binCleanupHandler";
 import deletionHandler from "../controllers/deletionHandler";
 import restorationHandler from "../controllers/restorationHandler";
-import type { VercelRequest, VercelResponse } from "@vercel/node";
+import type { VercelRequest, VercelResponse } from "../types/vercel";
 import initializationHandler from "../controllers/initializationHandler";
 
 export default async function mainHandler(

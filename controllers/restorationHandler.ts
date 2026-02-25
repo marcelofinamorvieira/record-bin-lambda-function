@@ -1,6 +1,6 @@
 import recursivelyDeleteAllBlockIDs from "../utils/recursivelyDeleteAllBlockIDs";
 import { ApiError, buildClient } from "@datocms/cma-client-node";
-import { VercelRequest, VercelResponse } from "@vercel/node";
+import type { VercelRequest, VercelResponse } from "../types/vercel";
 
 export default async function restorationHandler(
   req: VercelRequest,

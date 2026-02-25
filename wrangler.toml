@@ -1,0 +1,4 @@
+name = "record-bin-lambda-function"
+main = "cloudflare/worker.ts"
+compatibility_date = "2026-02-25"
+compatibility_flags = ["nodejs_compat"]

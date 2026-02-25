@@ -1,5 +1,5 @@
 import { buildClient } from "@datocms/cma-client-node";
-import { VercelRequest, VercelResponse } from "@vercel/node";
+import type { VercelRequest, VercelResponse } from "../types/vercel";
 import generateTrashLabel from "../utils/generateTrashLabel";
 import getRecordBinModel from "../utils/getRecordBinModel";
 
